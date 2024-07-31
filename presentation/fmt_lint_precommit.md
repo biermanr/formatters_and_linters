@@ -9,6 +9,21 @@ theme:
       right: "{current_slide} / {total_slides}"
 ---
 
+With your permission I'd like to ask a few very personal questions
+---
+<!-- pause -->
+# (a) Mac or (b) PC?
+<!-- pause -->
+# (a) Coke or (b) Pepsi?
+<!-- pause -->
+# (a) Yankees or (b) anyone else?
+<!-- pause -->
+# (a) Tabs or (b) spaces?
+<!-- pause -->
+# (a) 'quotes' or (b) "quotes"?
+<!-- pause -->
+# (a) y=ax+b or (b) y = a * x + b ?
+<!-- end_slide -->
 Goals for this session
 ---
 
@@ -23,13 +38,13 @@ Goals for this session
 <!-- pause -->
 
 Everything we discuss today will be for python, but other
-programming languages have the same or similar tools and concepts.
+programming languages have the same or similar tools and concepts!
 
 <!-- end_slide -->
 
 Something to look forward to
 ---
-Here's what we'll accomplish with formatting and linting!
+Here's an example of what we'll accomplish with formatting and linting!
 <!-- column_layout: [2, 2] -->
 <!-- column: 0 -->
 Code before:
@@ -59,22 +74,24 @@ def calculate_tip(cost, tip_fraction):
     total = cost * (1 + tip_percent)
     return total
 ```
+<!-- pause -->
+We'll be using formatters and linters to change our code for us!
 
 <!-- end_slide -->
 
 Following along and acknowledgements
 ---
 
-# If you want to follow along (it will be fun) you'll need access to a terminal with `python` and `git` installed and the ability to `pip install` packages.
+# If you want to follow along (it will be fun!) you'll need access to a terminal with `python` and `git` installed and the ability to `pip install` packages.
 
 <!-- pause -->
 
-## I learned quite a bit to prepare for this session and the following links were very helpful
+## I learned quite a bit in preparing for this session and the following links were very helpful
 * https://github.com/klieret/everything-you-didnt-now-you-needed
 * https://www.slideshare.net/slideshow/embed_code/key/euNhpSgvuPL9kG
 * https://github.com/henryiii/sqat-example
 
-(I *heavily borrowed* from these resources)
+(I *heavily borrowed* from these resources, and if we have extra time we can look at them)
 
 These materials were created by **Kilian Lieret** and **Henry Schreiner**
 who are excellent Research Software Engineers (RSEs) here at Princeton.
@@ -88,6 +105,7 @@ Development tool tradeoffs
 <!-- column_layout: [2, 2] -->
 <!-- column: 0 -->
 # Development tools solve problems for developers
+<!-- pause -->
 * Integrated Development Environments (IDEs)
     * Edit and view multiple files
 <!-- new_line -->
@@ -109,14 +127,14 @@ Development tool tradeoffs
 <!-- pause -->
 # Development tools add overhead to a project
 <!-- incremental_lists: true -->
-* "New contributors welcome!"
+* "New contributors welcome, no experience necessary!"
     * Just setup the dev environment...
     * Make sure the tests pass...
     * Add new tests for the code you've added...
     * Make sure you're using our coding style...
 
 <!-- pause -->
-This can be a burden for a small and simple code change.
+This can feel like a high barier to entry for new contributors.
 
 <!-- end_slide -->
 
@@ -316,6 +334,11 @@ Formatting rules
 
 <!-- pause -->
 
+## Is `black` a benevolent AI?
+<!-- pause -->
+## No, it's an uncaring collection of opinionated rules
+<!-- pause -->
+
 Turns out that `black` is pretty opinionated
 
 ```
@@ -421,7 +444,7 @@ $ ruff format tip.py
 <!-- column: 1 -->
 <!-- pause -->
 Running `cat` again:
-```python +line_numbers {all|6,8}
+```python +line_numbers
 def calculate_tip(cost, tip_fraction):
     try:
         tip_percent = float(tip_fraction)
@@ -432,6 +455,8 @@ def calculate_tip(cost, tip_fraction):
     O = cost * (1 + tip_percent)
     return O
 ```
+<!-- pause -->
+## It has fixed the spacing on line 8, and switched to single-quotes
 
 <!-- end_slide -->
 
@@ -454,7 +479,7 @@ def calculate_tip(cost, tip_fraction):
 ```
 
 <!-- pause -->
-The main issues I see is the `tip_percent >= 0` isn't actually doing anything.
+The main issue I see is on line `4` where the `tip_percent >= 0` comparison isn't being used anywhere
 ## This check is failing silently!
 
 <!-- pause -->
@@ -485,7 +510,7 @@ def calculate_tip(cost, tip_fraction):
 Run `ruff check tip.py`
 
 We get a lot of output, let's just start with the first complaint
-
+<!-- pause -->
 <!-- column: 1 -->
 ```bash
 tip.py.hold:4:9: B015 Pointless comparison.
@@ -647,7 +672,7 @@ FURB refurb
 
 <!-- column: 1 -->
 <!-- pause -->
-## Unlike `black` we are encouraged to choose which lints to include!
+## Unlike `black` we are encouraged to configure `ruff's` behavior
 
 This is controlled either in a `ruff.toml` or a `pyproject.toml` if you
 are writing a python package. Let's just use `ruff.toml` for today.
@@ -663,9 +688,13 @@ select = ["E4", "E7", "E9", "F", "B"]
 quote-style = "single"
 ```
 <!-- pause -->
-Let's try adding "D" for `pydoclint` suite of and
+Let's try adding `D` for `pydoclint` suite of and
 linting again with `ruff check tip.py`
 
+<!-- pause -->
+# Oh right! Docstrings...
+
+Let's skip the `D` lints actually. I'll change `ruff.toml` back to how it was
 <!-- end_slide -->
 
 Let's lint an old friend ("andres_tricky_bug.py")
@@ -744,6 +773,35 @@ Lets try with the `--fix` option!
 `ruff check --unsafe-fixes --fix andres_tricky_bug.py`
 <!-- end_slide -->
 
+`ruff` fixed the problem for us!
+---
+`cat andres_tricky_bug.py`
+```python
+from math import prod
+
+def add_to_list(*elements, starting_list=None):
+    if starting_list is None:
+        starting_list = []
+    starting_list.extend(elements)
+    return starting_list
+
+def sylvester(n):
+    sequence = add_to_list(2)
+    for _ in range(n-1):
+        new_num = 1 + prod(sequence)
+        sequence = add_to_list(new_num, starting_list=sequence)
+    return sequence
+
+print(sylvester(2))
+print(sylvester(3))
+print(sylvester(4))
+```
+<!-- pause -->
+# ruff is pretty cool!
+Also remember when `ruff` told us that it was extremely fast?
+
+<!-- end_slide -->
+
 `ruff` is written in rust and is VERY FAST
 ---
 
@@ -760,14 +818,21 @@ Here's how long various linters take to lint the `CPython` codebase
 
 <!-- pause -->
 `CPython` has 600,000 lines of python code (citation needed)
+<!-- pause -->
 
-If you're like me and writing < 10,000 lines of code then lint speed might not
-be your biggest concern. But `ruff` is user-friendly, so free speed!
+If you're like me and writing <<< 600,000 lines of code then lint speed might not
+be your biggest concern.
+
+But I find `ruff` is user-friendly anyway, so for me it's just a bonus that it's fast!
 <!-- pause -->
 Also people praise `ruff` for consolidating functionality from many tools.
 * Formatting
 * Linting
-* `import` sorting
+* import sorting (with ISORT which we won't talk about)
+
+<!-- pause -->
+Now that we're all convinced `ruff` is great, how can
+we best add it to our developer workflow?
 
 <!-- end_slide -->
 
@@ -775,7 +840,9 @@ What is pre-commit and why should I be excited?
 ---
 <!-- column_layout: [2, 2] -->
 <!-- column: 0 -->
-Oh boy, another developer tool someone is telling me that I should learn...
+We'll just add another developer tool!
+<!-- pause -->
+I can hear you say "Oh boy, another developer tool..."
 
 ```
        ╭───────╮
@@ -818,8 +885,36 @@ no changes added to commit...
 <!-- end_slide -->
 Nobody stops you from committing "non-ideal" code
 ---
+Let's make some code that we aren't proud of 😈
+<!-- pause -->
 
-TODO EXAMPLE OF GIT ADD/COMMIT/PUSH OF BAD CODE
+Let's make a big file
+```bash
+yes > no
+```
+
+<!-- pause -->
+Oops CTRL+C, CTRL+C! Hmm, no that's too big. Let's try:
+```bash
+yes | head -n 10000000 > large_file.txt
+```
+
+
+<!-- pause -->
+Finally lets make `ugly.py`
+```python
+echo "print('yes','no',             'maybe')" > ugly.py
+```
+
+<!-- pause -->
+Now we're ready to add these to our commit! No-one is stopping us!
+(don't follow along here, just watch~)
+```bash
+git add large_file.txt ugly.py
+git commit
+```
+<!-- pause -->
+Ok, I hope I made my point! How can we get some "parental supervision?"
 
 <!-- end_slide -->
 Pre-commit can take a look at you "non-ideal" code before it makes it in a commit
@@ -855,8 +950,8 @@ repos:
 ## Then let's try to commit some "non ideal" code
 ```bash
 pre-commit install #important
-cat woo.py
-git add woo.py
+cat ugly.py
+git add large_file.txt ugly.py
 git commit
 ```
 <!-- pause -->
@@ -889,3 +984,5 @@ Good luck incorporating these tool into your workflow!
 
 You don't have to do everything at once,
 but pre-commit is a good place to start!
+<!-- end_slide -->
+Yes, this is the last slide

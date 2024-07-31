@@ -824,39 +824,68 @@ TODO EXAMPLE OF GIT ADD/COMMIT/PUSH OF BAD CODE
 <!-- end_slide -->
 Pre-commit can take a look at you "non-ideal" code before it makes it in a commit
 ---
-<!-- column_layout: [2, 2] -->
+<!-- column_layout: [3, 2] -->
 <!-- column: 0 -->
 ## Let's install pre-commit using our .venv
 ```bash
 pip install pre-commit
 pre-commit --version
 cat .pre-commit-config.yaml
-pre-commit install
 ```
 <!-- pause -->
+```yaml
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    ...
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.5.5
+  hooks:
+    # Run the linter with --fix on py and jup
+    - id: ruff
+      types_or: [ python, pyi, jupyter ]
+      args: [ --fix ]
+    # Run the formatter.
+    - id: ruff-format
+      types_or: [ python, pyi, jupyter ]
+```
+
+<!-- pause -->
+<!-- column: 1 -->
 ## Then let's try to commit some "non ideal" code
 ```bash
+pre-commit install #important
 cat woo.py
 git add woo.py
 git commit
 ```
 <!-- pause -->
-<!-- column: 1 -->
 ## Pre-commit is NOT happy with us
 ```bash
 $ git commit
 Check Yaml...........................Passed
-Fix End of Files.....................Failed
-- hook id: end-of-file-fixer
-- exit code: 1
-- files were modified by this hook
-
-Fixing presentation/fmt_lint_precommit.md
-
-Trim Trailing Whitespace............Failed
-black...............................Failed
 ...
 ```
 
 ## But it did the work for us!
 So now we can just `git add` and `git commit` again
+
+<!-- end_slide -->
+Summary of what we've discussed
+---
+
+# Discussion of developer tools (they are friends sometimes)
+<!-- pause -->
+# Format some code with `black`!
+<!-- pause -->
+# Format and lint some code with `ruff`! (probably ok to just use ruff, not black)
+<!-- pause -->
+# Setup a pre-commit hook to automatically format and lint! (QC checking)
+<!-- pause -->
+
+Thanks for listening! Again thanks to Henry and Kilian for slides!
+
+Good luck incorporating these tool into your workflow!
+
+You don't have to do everything at once,
+but pre-commit is a good place to start!
